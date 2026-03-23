@@ -2,98 +2,116 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>没想好叫什么名字</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>没想好叫什么</title>
     <style>
-        :root { --pink: #fff0f5; } /* 柔和浅粉色 */
+        :root { --pink: #fff0f5; }
         body {
-            /* 1. 自定义背景图链接 */
             background: url('https://cdn.phototourl.com/free/2026-03-23-ec94ac3d-d37c-4049-8dde-9f98f66137e0.webp') no-repeat center center fixed;
             background-size: cover;
             color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: "PingFang SC", sans-serif; overflow: hidden;
         }
         body::before { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.3); z-index: -1; }
-
-        .hint { margin-bottom: 30px; font-size: 1rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5); text-align: center; line-height: 1.6; padding: 0 20px; }
-        .puzzle-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; width: 330px; }
-
+        .hint { margin-bottom: 5vh; font-size: clamp(1rem, 4.5vw, 1.3rem); text-shadow: 0 2px 4px rgba(0,0,0,0.5); text-align: center; line-height: 1.6; padding: 0 10%; }
+        .puzzle-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 90vw; max-width: 500px; aspect-ratio: 1 / 1; }
         .puzzle-piece {
-            width: 100px; height: 100px; background: var(--pink); border: 1px solid rgba(255,255,255,0.5);
-            cursor: pointer; transition: all 0.5s; display: flex; align-items: center; justify-content: center;
-            overflow: hidden; position: relative; color: #ffb6c1; font-size: 1.5rem; font-weight: bold;
+            width: 100%; height: 100%; background: var(--pink); border: 1px solid rgba(255,255,255,0.5);
+            cursor: pointer; transition: all 0.5s ease; display: flex; align-items: center; justify-content: center;
+            overflow: hidden; position: relative; color: #ffb6c1; font-size: clamp(1.5rem, 8vw, 2.5rem); font-weight: bold;
         }
+        /* 形状修剪 */
+        .shape-0 { clip-path: polygon(0% 0%, 100% 0%, 100% 70%, 70% 70%, 70% 100%, 0% 100%); }
+        .shape-1 { clip-path: polygon(30% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 30%, 30% 30%); }
+        .shape-2 { clip-path: polygon(0% 0%, 70% 0%, 70% 30%, 100% 30%, 100% 100%, 0% 100%); }
+        .shape-3 { clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 30% 100%, 30% 70%, 0% 70%); }
+        .shape-4 { clip-path: polygon(0% 30%, 30% 30%, 30% 0%, 100% 0%, 100% 100%, 0% 100%); }
+        .shape-5 { clip-path: polygon(0% 0%, 100% 0%, 100% 30%, 70% 30%, 70% 100%, 0% 100%); }
 
-        /* 拼图形状不变 */
-        .piece-1 { clip-path: polygon(0% 0%, 100% 0%, 100% 70%, 70% 70%, 70% 100%, 0% 100%); }
-        .piece-2 { clip-path: polygon(30% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 30%, 30% 30%); }
-        .piece-3 { clip-path: polygon(0% 0%, 70% 0%, 70% 30%, 100% 30%, 100% 100%, 0% 100%); }
-        .piece-4 { clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 30% 100%, 30% 70%, 0% 70%); }
-        .piece-5 { clip-path: polygon(0% 30%, 30% 30%, 30% 0%, 100% 0%, 100% 100%, 0% 100%); }
-        .piece-6 { clip-path: polygon(0% 0%, 100% 0%, 100% 30%, 70% 30%, 70% 100%, 0% 100%); }
-
-        .puzzle-piece.revealed { clip-path: none !important; background: #fff; transform: scale(1.05); z-index: 5; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        .puzzle-piece.revealed { clip-path: none !important; background: #fff; transform: scale(1.05); z-index: 5; box-shadow: 0 10px 20px rgba(0,0,0,0.3); border-radius: 4px; }
         .puzzle-piece.disabled { opacity: 0.2; filter: grayscale(1); cursor: not-allowed; }
-
-        .content-img { width: 100%; height: 100%; object-fit: cover; cursor: zoom-in; }
-        .content-text { padding: 10px; font-size: 0.75rem; color: #444; text-align: center; font-weight: normal; }
-
-        #overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.9); z-index: 100; justify-content: center; align-items: center; cursor: zoom-out; }
-        #overlay img { max-width: 90%; max-height: 90%; border-radius: 8px; }
+        .content-img { width: 100%; height: 100%; object-fit: cover; }
+        .content-text { padding: 8px; font-size: clamp(0.7rem, 3.2vw, 0.9rem); color: #444; text-align: center; font-weight: 500; }
+        #overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.9); z-index: 100; justify-content: center; align-items: center; }
+        #overlay img { max-width: 95%; max-height: 90%; border-radius: 8px; }
     </style>
 </head>
-<body onclick="checkReset()">
+<body onclick="checkReset(event)">
 
-    <div class="hint" id="hint">这是独属于你的 6 个碎片。<br><b>只给你看 3 个。</b></div>
-
-    <div class="puzzle-container" id="grid">
-        <div class="puzzle-piece piece-1" onclick="reveal(this, 'img', 'https://cdn.phototourl.com/free/2026-03-23-d2c5caf8-50a3-49b6-aa3a-93778f956426.jpg')">?</div>
-        <div class="puzzle-piece piece-2" onclick="reveal(this, 'img', 'https://cdn.phototourl.com/free/2026-03-23-16e258bc-ad20-4b1a-851a-2216efc3760e.jpg')">?</div>
-        <div class="puzzle-piece piece-3" onclick="reveal(this, 'img', 'https://pub-141831e61e69445289222976a15b6fb3.r2.dev/Image_to_url_V2/IMG_20260323_225020-imagetourl.cloud-1774281360894-tyeynu.jpg')">?</div>
-        <div class="puzzle-piece piece-4" onclick="reveal(this, 'txt', '芭乐青提的奥利奥很神奇的味道。')">?</div>
-        <div class="puzzle-piece piece-5" onclick="reveal(this, 'txt', '恭喜你，抽中了最没用的一句废话。')">?</div>
-        <div class="puzzle-piece piece-6" onclick="reveal(this, 'txt', '有一张我的照片，不知道你点不点的到哦。')">?</div>
-    </div>
+    <div class="hint" id="hint">嘿嘿。<br><b>只给你看 3 个。</b></div>
+    <div class="puzzle-container" id="grid"></div>
 
     <div id="overlay" onclick="this.style.display='none'">
         <img id="big-img" src="">
     </div>
 
 <script>
+    const dataPool = [
+        { type: 'img', content: 'https://cdn.phototourl.com/free/2026-03-23-d2c5caf8-50a3-49b6-aa3a-93778f956426.jpg' },
+        { type: 'img', content: 'https://cdn.phototourl.com/free/2026-03-23-16e258bc-ad20-4b1a-851a-2216efc3760e.jpg' },
+        { type: 'img', content: 'https://pub-141831e61e69445289222976a15b6fb3.r2.dev/Image_to_url_V2/IMG_20260323_225020-imagetourl.cloud-1774281360894-tyeynu.jpg' },
+        { type: 'txt', content: '芭乐青提的奥利奥很神奇的味道。' },
+        { type: 'txt', content: '恭喜你，抽中了最没用的一句废话。' },
+        { type: 'txt', content: '有一张我的照片，不知道你点不点的到哦。' }
+    ];
+
     let count = 0;
     const max = 3;
     let resetClicks = 0;
+    let resetTimer;
+    const COOLDOWN_MS = 2 * 60 * 60 * 1000;
 
-    // 检查是否已锁定
+    function updateResetStatus() {
+        const lastReset = localStorage.getItem('last_reset_time');
+        if (lastReset) {
+            const elapsed = Date.now() - parseInt(lastReset);
+            if (elapsed >= COOLDOWN_MS) {
+                localStorage.removeItem('last_reset_time');
+            }
+        }
+    }
+
+    window.onload = function() {
+        updateResetStatus();
+        const grid = document.getElementById('grid');
+        const shuffled = [...dataPool].sort(() => Math.random() - 0.5);
+
+        shuffled.forEach((item, index) => {
+            const div = document.createElement('div');
+            div.className = `puzzle-piece shape-${index}`;
+            div.innerText = "?";
+            div.onclick = () => reveal(div, item.type, item.content);
+            grid.appendChild(div);
+        });
+        checkStatus();
+    };
+
     function checkStatus() {
         if(localStorage.getItem('puzzle_played') === 'true') {
-            document.getElementById('hint').innerHTML = "<b>好可惜哦。</b><br>只能看3个耶。<br><span style='font-size:0.7rem;color:#555'>(除非获得管理员授权)</span>";
+            document.getElementById('hint').innerHTML = "<b>好可惜哦，只能看3个耶。</b><br>你知道的，给你机会夸夸我（嘻嘻）";
             document.querySelectorAll('.puzzle-piece').forEach(p => {
-                p.classList.add('disabled');
-                p.innerText = "×";
+                if(!p.classList.contains('revealed')) {
+                    p.classList.add('disabled');
+                    p.innerText = "×";
+                }
             });
         }
     }
-    checkStatus();
 
     function reveal(el, type, data) {
         if (count >= max || el.classList.contains('revealed') || localStorage.getItem('puzzle_played') === 'true') return;
-
         count++;
         el.classList.add('revealed');
         el.innerHTML = "";
-
         if (type === 'img') {
             const img = document.createElement('img');
-            img.src = data;
-            img.className = 'content-img';
+            img.src = data; img.className = 'content-img';
             img.onclick = (e) => { e.stopPropagation(); showBig(data); };
             el.appendChild(img);
         } else {
             const txt = document.createElement('div');
-            txt.innerText = data;
-            txt.className = 'content-text';
+            txt.innerText = data; txt.className = 'content-text';
             el.appendChild(txt);
         }
-
         if (count === max) {
             localStorage.setItem('puzzle_played', 'true');
             setTimeout(lockAll, 800);
@@ -107,23 +125,26 @@
 
     function lockAll() {
         const boxes = document.querySelectorAll('.puzzle-piece:not(.revealed)');
-        boxes.forEach(box => {
-            box.classList.add('disabled');
-            box.innerText = "×";
-        });
-        document.getElementById('hint').innerHTML = "<b>你知道的。</b><br>给你机会夸夸我（嘻嘻）。";
+        boxes.forEach(box => { box.classList.add('disabled'); box.innerText = "×"; });
+        checkStatus();
     }
 
-    // 后门逻辑：连续点击背景 5 次重置
-    function checkReset() {
-        resetClicks++;
-        if (resetClicks === 5) {
-            localStorage.removeItem('puzzle_played');
-            alert("✨ 获得管理员特权：系统已强制重启，你可以重新选择 3 个碎片了。");
-            location.reload();
+    function checkReset(e) {
+        if (e.target.tagName === 'BODY') {
+            updateResetStatus();
+            // 冷却中直接返回，不计数，无提示
+            if (localStorage.getItem('last_reset_time')) return;
+
+            resetClicks++;
+            clearTimeout(resetTimer);
+            if (resetClicks === 5) {
+                localStorage.removeItem('puzzle_played');
+                localStorage.setItem('last_reset_time', Date.now());
+                alert("✨ 应该不会选到同一张吧（坏笑）。");
+                location.reload();
+            }
+            resetTimer = setTimeout(() => { resetClicks = 0; }, 2000);
         }
-        // 3秒内不点完5次就清零计数
-        setTimeout(() => { resetClicks = 0; }, 3000);
     }
 </script>
 </body>
